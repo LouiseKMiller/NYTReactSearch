@@ -1,0 +1,39 @@
+{
+  "name": "nytreactsearch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "NYTCode.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LouiseKMiller/NYTReactSearch.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LouiseKMiller/NYTReactSearch/issues"
+  },
+  "homepage": "https://github.com/LouiseKMiller/NYTReactSearch#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "method-override": "^2.3.6",
+    "mongoose": "^4.5.10",
+    "morgan": "^1.7.0",
+    "path": "^0.12.7",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.14.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-react": "^6.11.1",
+    "html-webpack-plugin": "^2.22.0",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.15.0"
+  }
+}
