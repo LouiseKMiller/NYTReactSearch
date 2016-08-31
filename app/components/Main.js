@@ -3,8 +3,62 @@ var React = require('react');
 var Search = require('./children/Search');
 var Results = require('./children/Results');
 var Saved = require('./children/Saved');
+var helpers = require('./utils/helpers.js');
 
 var Main = React.createClass({
+	// Here we set a generic state associated with the number of clicks
+	getInitialState: function(){
+		return {
+			searchTerms: {},
+			results: [],
+			history: [] /*Note how we added in this history state variable*/
+		}
+	},	
+
+	// This function allows childrens to update the parent.
+	setTerms: function(term){
+		this.setState({
+			searchTerms: term
+		})
+	},
+
+	// If the component changes (i.e. if a search is entered)... 
+	componentDidUpdate: function(prevProps, prevState){
+
+		if(prevState.searchTerms != this.state.searchTerms){
+			console.log("UPDATED");
+
+			// Run the query for the address
+			helpers.runQuery(this.state.searchTerms)
+				.then(function(data){
+					if (data != this.state.results)
+					{
+						console.log("Results", data);
+
+						this.setState({
+							results: data
+						})
+					}
+				}.bind(this))
+				
+		}
+	},
+
+	// The moment the page renders get the History
+	// componentDidMount: function(){
+
+	// 	// Get the latest history.
+	// 	helpers.getHistory()
+	// 		.then(function(response){
+	// 			if (response != this.state.history){
+	// 				console.log ("History", response.data);
+
+	// 				this.setState({
+	// 					history: response.data
+	// 				})
+	// 			}
+	// 		}.bind(this))
+	// },
 
 	// Here we render the function
 	render: function(){
@@ -23,11 +77,11 @@ var Main = React.createClass({
 
 
 				<div className="row">					
-					<Search />
+					<Search setTerms={this.setTerms}/>
 				</div>
 
 				<div className="row">					
-					<Results />
+					<Results nytData={this.state.results}/>
 				</div>
 
 				<div className="row">					
