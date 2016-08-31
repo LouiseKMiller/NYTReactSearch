@@ -5,7 +5,7 @@ var num1 = 1;
 var num5 = 5;
 var num10 = 10;
 
-var Search = React.createClass({
+var Form = React.createClass({
 
 	// Here we set a generic state associated with the text being searched for
 	getInitialState: function(){
@@ -60,19 +60,19 @@ var Search = React.createClass({
 
 						  <div className="form-group">
 						    <label>Search Term</label>
-						    <input type="text" className="form-control" id="searchTerm" onChange= {this.handleChange} required/>
+						    <input type="text" value={this.state.value}className="form-control" id="searchTerm" onChange= {this.handleChange} required/>
 						  </div>
 
 
 						  <div className="form-group">
 						    <label>Start Year</label>
-						    <input type="text" className="form-control" id="startYear" onChange= {this.handleChange} required/>
+						    <input type="text" value={this.state.value}className="form-control" id="startYear" onChange= {this.handleChange} required/>
 						  </div>
 
 
 						  <div className="form-group">
 						    <label>End Year</label>
-						    <input type="text" className="form-control" id="endYear" onChange= {this.handleChange} required/>
+						    <input type="text" value={this.state.value}className="form-control" id="endYear" onChange= {this.handleChange} required/>
 						  </div>
 
 
@@ -87,4 +87,4 @@ var Search = React.createClass({
 	}
 });
 	
-module.exports = Search;
+module.exports = Form;

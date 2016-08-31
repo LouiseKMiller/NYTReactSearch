@@ -18,8 +18,13 @@ var Results = React.createClass({
 						<h3 className="panel-title"><strong><i className="fa fa-table"></i>   Top Articles</strong></h3>
 					</div>
 
-					<div className="panel-body">
-					<p>{this.props.nytData}</p>
+					<div className="panel-body">					
+					{this.props.nytData.map(function(search, i)
+						{
+							return <p key={i}>{search.location} - {search.date}</p> 
+						}
+					)}
+
 					</div>
 				</div>
 			</div>

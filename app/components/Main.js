@@ -1,6 +1,6 @@
 // Include React 
 var React = require('react');
-var Search = require('./children/Search');
+var Form = require('./children/Form');
 var Results = require('./children/Results');
 var Saved = require('./children/Saved');
 var helpers = require('./utils/helpers.js');
@@ -77,7 +77,7 @@ var Main = React.createClass({
 
 
 				<div className="row">					
-					<Search setTerms={this.setTerms}/>
+					<Form setTerms={this.setTerms}/>
 				</div>
 
 				<div className="row">					
