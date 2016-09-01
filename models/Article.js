@@ -21,7 +21,7 @@ var ArticleSchema = new Schema({
     type:String,
     required:true
   }
-  
+
 });
 
 // a 'model' is a complied version of the schema

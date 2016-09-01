@@ -1,4 +1,4 @@
-// Include React 
+// Include React
 var React = require('react');
 var Form = require('./children/Form');
 var Results = require('./children/Results');
@@ -13,7 +13,7 @@ var Main = React.createClass({
 			results: [],
 			history: [] /*Note how we added in this history state variable*/
 		}
-	},	
+	},
 
 	// This function allows childrens to update the parent.
 	setTerms: function(term){
@@ -22,7 +22,7 @@ var Main = React.createClass({
 		})
 	},
 
-	// If the component changes (i.e. if a search is entered)... 
+	// If the component changes (i.e. if a search is entered)...
 	componentDidUpdate: function(prevProps, prevState){
 
 		if(prevState.searchTerms != this.state.searchTerms){
@@ -38,9 +38,16 @@ var Main = React.createClass({
 						this.setState({
 							results: data
 						})
+
+						// After we've received the result... then post the search term to our history.
+						helpers.postResults(this.state.results)
+							.then(function(data){
+								console.log("Updated!");
+
+							}.bind(this)
+						)
 					}
 				}.bind(this))
-				
 		}
 	},
 
@@ -68,7 +75,7 @@ var Main = React.createClass({
 		};
 		return(
 
-			// Main Bootstrap Search 
+			// Main Bootstrap Search
 			<div className="container">
 
 				<div className="jumbotron" style={style}>
@@ -76,15 +83,15 @@ var Main = React.createClass({
 				</div>
 
 
-				<div className="row">					
+				<div className="row">
 					<Form setTerms={this.setTerms}/>
 				</div>
 
-				<div className="row">					
+				<div className="row">
 					<Results nytData={this.state.results}/>
 				</div>
 
-				<div className="row">					
+				<div className="row">
 					<Saved />
 				</div>
 
@@ -92,7 +99,7 @@ var Main = React.createClass({
 
 				<div className="row">
 					<div className="col-sm-12">
-						
+
 						<hr/>
 						<h5 className="text-center"><small>Made by Louise with lots and lots of <i className="fa fa-heart"></i></small></h5>
 

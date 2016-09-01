@@ -21433,9 +21433,9 @@
 
 	'use strict';
 
-	// Include React 
+	// Include React
 	var React = __webpack_require__(1);
-	var Search = __webpack_require__(173);
+	var Form = __webpack_require__(173);
 	var Results = __webpack_require__(174);
 	var Saved = __webpack_require__(175);
 	var helpers = __webpack_require__(176);
@@ -21459,7 +21459,7 @@
 			});
 		},
 
-		// If the component changes (i.e. if a search is entered)... 
+		// If the component changes (i.e. if a search is entered)...
 		componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
 
 			if (prevState.searchTerms != this.state.searchTerms) {
@@ -21502,7 +21502,7 @@
 			};
 			return (
 
-				// Main Bootstrap Search 
+				// Main Bootstrap Search
 				React.createElement(
 					'div',
 					{ className: 'container' },
@@ -21523,12 +21523,12 @@
 					React.createElement(
 						'div',
 						{ className: 'row' },
-						React.createElement(Search, { setTerms: this.setTerms })
+						React.createElement(Form, { setTerms: this.setTerms })
 					),
 					React.createElement(
 						'div',
 						{ className: 'row' },
-						React.createElement(Results, null)
+						React.createElement(Results, { nytData: this.state.results })
 					),
 					React.createElement(
 						'div',
@@ -21574,8 +21574,8 @@
 	var num5 = 5;
 	var num10 = 10;
 
-	var Search = React.createClass({
-		displayName: "Search",
+	var Form = React.createClass({
+		displayName: "Form",
 
 
 		// Here we set a generic state associated with the text being searched for
@@ -21650,7 +21650,7 @@
 									null,
 									"Search Term"
 								),
-								React.createElement("input", { type: "text", className: "form-control", id: "searchTerm", onChange: this.handleChange, required: true })
+								React.createElement("input", { type: "text", value: this.state.value, className: "form-control", id: "searchTerm", onChange: this.handleChange, required: true })
 							),
 							React.createElement(
 								"div",
@@ -21660,7 +21660,7 @@
 									null,
 									"Start Year"
 								),
-								React.createElement("input", { type: "text", className: "form-control", id: "startYear", onChange: this.handleChange, required: true })
+								React.createElement("input", { type: "text", value: this.state.value, className: "form-control", id: "startYear", onChange: this.handleChange, required: true })
 							),
 							React.createElement(
 								"div",
@@ -21670,7 +21670,7 @@
 									null,
 									"End Year"
 								),
-								React.createElement("input", { type: "text", className: "form-control", id: "endYear", onChange: this.handleChange, required: true })
+								React.createElement("input", { type: "text", value: this.state.value, className: "form-control", id: "endYear", onChange: this.handleChange, required: true })
 							),
 							React.createElement(
 								"button",
@@ -21691,7 +21691,7 @@
 		}
 	});
 
-	module.exports = Search;
+	module.exports = Form;
 
 /***/ },
 /* 174 */
@@ -21732,12 +21732,16 @@
 					),
 					React.createElement(
 						"div",
-						{ className: "panel-body", id: "wellSection" },
-						React.createElement(
-							"p",
-							null,
-							this.props.nytData
-						)
+						{ className: "panel-body" },
+						this.props.nytData.map(function (search, i) {
+							return React.createElement(
+								"p",
+								{ key: i },
+								search.location,
+								" - ",
+								search.date
+							);
+						})
 					)
 				)
 			);
@@ -21803,7 +21807,7 @@
 	// This variable will be pre-programmed with our authentication key (the one we received when we registered)
 	var authKey = "b9f91d369ff59547cd47b931d8cbc56b:0:74623931";
 
-	// Based on the queryTerm we will create a queryURL 
+	// Based on the queryTerm we will create a queryURL
 	var queryURLBase = "https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=" + authKey + "&q=";
 
 	// Array to hold the various article info
@@ -21812,7 +21816,7 @@
 	// Helper Functions (in this case the only one is runQuery)
 	var helpers = {
 
-		// This function serves our purpose of running the query to geolocate. 
+		// This function serves our purpose of running the query to geolocate.
 		runQuery: function runQuery(terms) {
 			console.log("running query with: ", terms);
 
@@ -21844,7 +21848,7 @@
 		},
 
 		// This function hits our own server to retrieve the record of query results
-		getHistory: function getHistory() {
+		getResults: function getResults() {
 
 			return axios.get('/api').then(function (response) {
 
@@ -21854,7 +21858,7 @@
 		},
 
 		// This function posts new searches to our database.
-		postHistory: function postHistory(location) {
+		postResults: function postResults(location) {
 
 			return axios.post('/api', { location: location }).then(function (results) {
 
@@ -21865,7 +21869,7 @@
 
 	};
 
-	// We export the helpers function 
+	// We export the helpers function
 	module.exports = helpers;
 
 /***/ },

@@ -4,7 +4,7 @@ var axios = require('axios');
 // This variable will be pre-programmed with our authentication key (the one we received when we registered)
 var authKey = "b9f91d369ff59547cd47b931d8cbc56b:0:74623931";
 
-// Based on the queryTerm we will create a queryURL 
+// Based on the queryTerm we will create a queryURL
 var queryURLBase = "https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=" + authKey + "&q=";
 
 // Array to hold the various article info
@@ -13,7 +13,7 @@ var articleCounter = 0;
 // Helper Functions (in this case the only one is runQuery)
 var helpers = {
 
-	// This function serves our purpose of running the query to geolocate. 
+	// This function serves our purpose of running the query to geolocate.
 	runQuery: function(terms){
 		console.log("running query with: ", terms);
 
@@ -33,7 +33,7 @@ var helpers = {
 			queryURL = queryURL + "&end_date=" + endYear + "0101";
 		}
 		console.log('queryURL', queryURL)
-		return axios.get(queryURL) 
+		return axios.get(queryURL)
 			.then(function(results) {
 				console.log("results: ", results);
 				var data = [];
@@ -46,7 +46,7 @@ var helpers = {
 	},
 
 	// This function hits our own server to retrieve the record of query results
-	getHistory: function(){
+	getResults: function(){
 
 		return axios.get('/api')
 			.then(function(response){
@@ -57,7 +57,7 @@ var helpers = {
 	},
 
 	// This function posts new searches to our database.
-	postHistory: function(location){
+	postResults: function(location){
 
 		return axios.post('/api', {location: location})
 			.then(function(results){
@@ -70,5 +70,5 @@ var helpers = {
 }
 
 
-// We export the helpers function 
+// We export the helpers function
 module.exports = helpers;
