@@ -15,7 +15,7 @@ var ArticleSchema = new Schema({
   },
   date: {
     type:Date
-  }
+  },
   // link is required
   url: {
     type:String,

@@ -19,7 +19,7 @@ var helpers = {
 
 		// Search Terms
 		var queryURL = queryURLBase + terms.searchTerm;
-		var numResults = 5;
+		const numResults = 5;
 		var startYear = terms.startYear;
 		var endYear = terms.endYear;
 
@@ -37,8 +37,14 @@ var helpers = {
 			.then(function(results) {
 				console.log("results: ", results);
 				var data = [];
-				for (var i=0; i<5; i++) {
-					data.push(results.data.response.docs[i]);
+				for (var i=0; i<numResults; i++) {
+					data.push(
+						{
+						title: results.data.response.docs[i].headline.main,
+						date: results.data.response.docs[i].pub_date,
+						url: results.data.response.docs[i].web_url
+						}
+					);
 				};
 				console.log("data", data);
 				return data;
@@ -46,7 +52,7 @@ var helpers = {
 	},
 
 	// This function hits our own server to retrieve the record of query results
-	getResults: function(){
+	getSavedArticles: function(){
 
 		return axios.get('/api')
 			.then(function(response){
@@ -56,10 +62,10 @@ var helpers = {
 			});
 	},
 
-	// This function posts new searches to our database.
-	postResults: function(location){
+	// This function posts new results to our database.
+	postResults: function(data){
 
-		return axios.post('/api', {location: location})
+		return axios.post('/api', data)
 			.then(function(results){
 
 				console.log("Posted to MongoDB");

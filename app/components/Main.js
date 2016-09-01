@@ -10,7 +10,8 @@ var Main = React.createClass({
 	getInitialState: function(){
 		return {
 			searchTerms: {},
-			results: [],
+			// results holds headline, date and url
+			searchResults: [],
 			history: [] /*Note how we added in this history state variable*/
 		}
 	},
@@ -28,7 +29,7 @@ var Main = React.createClass({
 		if(prevState.searchTerms != this.state.searchTerms){
 			console.log("UPDATED");
 
-			// Run the query for the address
+			// Run the query for the news articles
 			helpers.runQuery(this.state.searchTerms)
 				.then(function(data){
 					if (data != this.state.results)
@@ -36,36 +37,46 @@ var Main = React.createClass({
 						console.log("Results", data);
 
 						this.setState({
-							results: data
+							searchResults: data
 						})
 
-						// After we've received the result... then post the search term to our history.
-						helpers.postResults(this.state.results)
-							.then(function(data){
-								console.log("Updated!");
+						// // After we've received the result... then post the results to MongoDB.
+						// helpers.postResults(this.state.searchResults)
+						// 	.then(function(data2){
+						// 		console.log("Updated!");
 
-							}.bind(this)
-						)
-					}
-				}.bind(this))
-		}
+						// 		helpers.getResults()
+						// 			.then(function(response){
+						// 				console.log("Current Results", response.data);
+						// 				if (response != this.state.history){
+						// 					console.log ("History", response.data);
+						// 					this.setState({
+						// 						history: response.data
+						// 					})
+						// 				}
+						// 			}.bind(this))
+
+						// 	}.bind(this)
+						// ) // 
+					} // if statement
+				}.bind(this)) // then(function(data))
+		}  //if statement
 	},
 
-	// The moment the page renders get the History
-	// componentDidMount: function(){
+	componentDidMount: function(){
 
-	// 	// Get the latest history.
-	// 	helpers.getHistory()
-	// 		.then(function(response){
-	// 			if (response != this.state.history){
-	// 				console.log ("History", response.data);
+		// Get the latest history.
+		helpers.getSavedArticles()
+			.then(function(response){
+				if (response != this.state.history){
+					console.log ("History", response.data);
 
-	// 				this.setState({
-	// 					history: response.data
-	// 				})
-	// 			}
-	// 		}.bind(this))
-	// },
+					this.setState({
+						history: response.data
+					})
+				}
+			}.bind(this))
+	},
 
 	// Here we render the function
 	render: function(){
@@ -88,11 +99,11 @@ var Main = React.createClass({
 				</div>
 
 				<div className="row">
-					<Results nytData={this.state.results}/>
+					<Results nycData={this.state.searchResults}/>
 				</div>
 
 				<div className="row">
-					<Saved />
+					<Saved savedArticles={this.state.history}/>
 				</div>
 
 

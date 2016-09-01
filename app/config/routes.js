@@ -2,6 +2,7 @@
 var path = require('path');
 var express = require('express');
 var router = express.Router();
+var Article = require('../../models/Article.js');
 
 
 router.get('/', function(req,res){
@@ -16,15 +17,21 @@ router.get('/', function(req,res){
   });
 })
 
+router.get('/api', function(req,res){
+	console.log("get request received");
+	Article.find({})
+		.exec(function(err, docs){
+			if  (err){
+				console.log(err);
+			} else {
+				console.log("****end of database search***")
+				res.send(docs);
+		}
+	}) // end of Article.find
+});
+
 router.post('/api', function(req,res){
-	var data = [];
-	for (var i=0; i<res.length; i++){
-		data.push({
-		   title: res[i].title,
-		   date: res[i].date,
-		   url: res[i].url
-		})
-	};
+	var data = req.body;
 	Article.create(data,function(err, docs){
 		if  (err){
 			console.log(err);
@@ -32,7 +39,7 @@ router.post('/api', function(req,res){
 			console.log("docs saved to database");
 		};
 	}); // end of Article.create
-	res.send("Scrape Complete");
+	res.send("Saved Search");
 });
 
 module.exports = router;
