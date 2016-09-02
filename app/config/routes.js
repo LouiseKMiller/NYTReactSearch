@@ -32,14 +32,14 @@ router.get('/api', function(req,res){
 
 router.post('/api', function(req,res){
 	var data = req.body;
-	Article.create(data,function(err, docs){
+	Article.create(data,function(err, doc){
 		if  (err){
 			console.log(err);
 		} else {
-			console.log("docs saved to database");
+			console.log("doc saved to database");
+			res.send(doc);
 		};
 	}); // end of Article.create
-	res.send("Saved Search");
 });
 
 module.exports = router;

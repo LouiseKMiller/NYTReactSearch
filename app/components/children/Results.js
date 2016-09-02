@@ -1,21 +1,46 @@
+
 // Include React 
 var React = require('react');
-var OneResult = require('./grandkids/OneResult');
+
 
 
 var Results = React.createClass({
 
-	showResults: function(){
-		if (this.props.nycData.index != null) {
-			console.log("returning ", this.props.nycData[0].title);
-			return this.props.nycData[0].title;
-		}
+	// When a user submits... 
+	handleSave: function(i, props){
 
+		var status = this.props.saves;
+		if (status[i] == 0){
+		// console.log("status after: ", status);
+			this.props.saveArticle(i);
+		}
+		// Set the parent to have the search term
+	//	this.props.setSave(this.state);
+		return false;
 	},
+
 
 	// Here we render the function
 	render: function(){
 
+		var articles = this.props.nycData;
+		var articleList = articles.map(function(result, i){
+			return (
+				<div className="well" id={"articleWell"+ i} key={i}>
+					<h3 className="articleHeadline">
+						<strong>{result.title}</strong>
+					</h3>
+					<button type="button" className="btn btn-default btn-sm pull-right" data-index={i} onClick={this.handleSave.bind(this,i,this.props)}><i className="fa fa-database"></i>Save</button>
+					<h5>
+						{result.date}
+					</h5>
+					<a href={result.url}>
+						{result.url}
+					</a>
+
+				</div>
+			)
+		}, this)
 
 		return(
 
@@ -31,13 +56,8 @@ var Results = React.createClass({
 						</h3>
 					</div>
 
-					<div className="panel-body">					
-					{/* Here we use a map function to loop through an array in JSX*/}
-					{this.props.nycData.map(function(result, i)
-						{
-							return <p key={i}>{result.title}</p> 
-						}
-					)}
+					<div className="panel-body">	
+						{articleList}				
 					</div>
 
 				</div>
@@ -48,9 +68,3 @@ var Results = React.createClass({
 });
 
 module.exports = Results;
-
-						// {this.props.nycData.map(function(result, i)
-						// 	{
-						// 		return <OneResult key={i} data={result}/>
-						// 	}
-						// )}

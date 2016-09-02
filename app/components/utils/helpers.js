@@ -37,6 +37,7 @@ var helpers = {
 			.then(function(results) {
 				console.log("results: ", results);
 				var data = [];
+				var saved = [];
 				for (var i=0; i<numResults; i++) {
 					data.push(
 						{
@@ -45,9 +46,14 @@ var helpers = {
 						url: results.data.response.docs[i].web_url
 						}
 					);
+					saved.push(0);
 				};
 				console.log("data", data);
-				return data;
+				console.log("saved", saved);
+				var bundle = {
+					data: data,
+					saveStatus: saved};
+				return bundle;
 			});
 	},
 
@@ -63,12 +69,13 @@ var helpers = {
 	},
 
 	// This function posts new results to our database.
-	postResults: function(data){
+	postArticle: function(data){
 
 		return axios.post('/api', data)
 			.then(function(results){
 
 				console.log("Posted to MongoDB");
+				console.log("results", results);
 				return(results);
 			})
 	}

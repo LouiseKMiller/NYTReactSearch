@@ -21437,8 +21437,8 @@
 	var React = __webpack_require__(1);
 	var Form = __webpack_require__(173);
 	var Results = __webpack_require__(174);
-	var Saved = __webpack_require__(176);
-	var helpers = __webpack_require__(177);
+	var Saved = __webpack_require__(175);
+	var helpers = __webpack_require__(176);
 
 	var Main = React.createClass({
 		displayName: 'Main',
@@ -21449,30 +21449,60 @@
 				searchTerms: {},
 				// results holds headline, date and url
 				searchResults: [],
+				saveStatus: [],
 				history: [] /*Note how we added in this history state variable*/
 			};
 		},
 
-		// This function allows childrens to update the parent.
+		// This function allows form child to update the main with new search terms.
 		setTerms: function setTerms(term) {
 			this.setState({
 				searchTerms: term
 			});
 		},
 
+		// This function allows form child to update the main with new search terms.
+		saveArticle: function saveArticle(indx) {
+			var dat = {
+				title: this.state.searchResults[indx].title,
+				date: this.state.searchResults[indx].date,
+				url: this.state.searchResults[indx].url
+			};
+			helpers.postArticle(dat).then(function (savedArticle) {
+				console.log("savedArticle", savedArticle);
+				var status = this.state.saveStatus;
+				status[indx] = 1;
+
+				this.setState({ saveStatus: status });
+
+				// After we've done the post... then get the updated history
+				helpers.getSavedArticles().then(function (response) {
+					console.log("Current History", response.data);
+					if (response != this.state.history) {
+						console.log("History", response.data);
+
+						this.setState({
+							history: response.data
+						});
+					}
+				}.bind(this));
+			}.bind(this, indx));
+		},
+
 		// If the component changes (i.e. if a search is entered)...
 		componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
 
 			if (prevState.searchTerms != this.state.searchTerms) {
-				console.log("UPDATED");
+				console.log("UPDATED SEARCH TERMS");
 
 				// Run the query for the news articles
-				helpers.runQuery(this.state.searchTerms).then(function (data) {
-					if (data != this.state.results) {
-						console.log("Results", data);
+				helpers.runQuery(this.state.searchTerms).then(function (bundle) {
+					if (bundle.data != this.state.results) {
+						console.log("Results", bundle.data);
 
 						this.setState({
-							searchResults: data
+							searchResults: bundle.data,
+							saveStatus: bundle.saveStatus
 						});
 
 						// // After we've received the result... then post the results to MongoDB.
@@ -21495,7 +21525,7 @@
 						// ) // 
 					} // if statement
 				}.bind(this)); // then(function(data))
-			} //if statement
+			}; //if statement
 		},
 
 		componentDidMount: function componentDidMount() {
@@ -21546,7 +21576,7 @@
 					React.createElement(
 						'div',
 						{ className: 'row' },
-						React.createElement(Results, { nycData: this.state.searchResults })
+						React.createElement(Results, { nycData: this.state.searchResults, saves: this.state.saveStatus, saveArticle: this.saveArticle })
 					),
 					React.createElement(
 						'div',
@@ -21715,56 +21745,88 @@
 /* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
 	// Include React 
 	var React = __webpack_require__(1);
-	var OneResult = __webpack_require__(175);
 
 	var Results = React.createClass({
-		displayName: 'Results',
+		displayName: "Results",
 
 
-		showResults: function showResults() {
-			if (this.props.nycData.index != null) {
-				console.log("returning ", this.props.nycData[0].title);
-				return this.props.nycData[0].title;
+		// When a user submits... 
+		handleSave: function handleSave(i, props) {
+
+			var status = this.props.saves;
+			if (status[i] == 0) {
+				// console.log("status after: ", status);
+				this.props.saveArticle(i);
 			}
+			// Set the parent to have the search term
+			//	this.props.setSave(this.state);
+			return false;
 		},
 
 		// Here we render the function
 		render: function render() {
 
-			return React.createElement(
-				'div',
-				{ className: 'col-sm-12' },
-				React.createElement('br', null),
-				React.createElement(
-					'div',
-					{ className: 'panel panel-primary' },
+			var articles = this.props.nycData;
+			var articleList = articles.map(function (result, i) {
+				return React.createElement(
+					"div",
+					{ className: "well", id: "articleWell" + i, key: i },
 					React.createElement(
-						'div',
-						{ className: 'panel-heading' },
+						"h3",
+						{ className: "articleHeadline" },
 						React.createElement(
-							'h3',
-							{ className: 'panel-title' },
+							"strong",
+							null,
+							result.title
+						)
+					),
+					React.createElement(
+						"button",
+						{ type: "button", className: "btn btn-default btn-sm pull-right", "data-index": i, onClick: this.handleSave.bind(this, i, this.props) },
+						React.createElement("i", { className: "fa fa-database" }),
+						"Save"
+					),
+					React.createElement(
+						"h5",
+						null,
+						result.date
+					),
+					React.createElement(
+						"a",
+						{ href: result.url },
+						result.url
+					)
+				);
+			}, this);
+
+			return React.createElement(
+				"div",
+				{ className: "col-sm-12" },
+				React.createElement("br", null),
+				React.createElement(
+					"div",
+					{ className: "panel panel-primary" },
+					React.createElement(
+						"div",
+						{ className: "panel-heading" },
+						React.createElement(
+							"h3",
+							{ className: "panel-title" },
 							React.createElement(
-								'strong',
+								"strong",
 								null,
-								'Top Articles'
+								"Top Articles"
 							)
 						)
 					),
 					React.createElement(
-						'div',
-						{ className: 'panel-body' },
-						this.props.nycData.map(function (result, i) {
-							return React.createElement(
-								'p',
-								{ key: i },
-								result.title
-							);
-						})
+						"div",
+						{ className: "panel-body" },
+						articleList
 					)
 				)
 			);
@@ -21773,62 +21835,8 @@
 
 	module.exports = Results;
 
-	// {this.props.nycData.map(function(result, i)
-	// 	{
-	// 		return <OneResult key={i} data={result}/>
-	// 	}
-	// )}
-
 /***/ },
 /* 175 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	var React = __webpack_require__(1);
-
-	// This is the form component. 
-	var OneResult = React.createClass({
-		displayName: "OneResult",
-
-		render: function render() {
-
-			return React.createElement(
-				"div",
-				{ className: "well", id: "articleWell" + this.prop.key, key: this.prop.key },
-				React.createElement(
-					"h3",
-					{ className: "articleHeadline" },
-					React.createElement(
-						"span",
-						{ className: "label label-primary" },
-						this.prop.key
-					),
-					React.createElement(
-						"strong",
-						null,
-						this.prop.data.title
-					)
-				),
-				React.createElement(
-					"h5",
-					null,
-					this.prop.data.date
-				),
-				React.createElement(
-					"h5",
-					null,
-					this.prop.data.url
-				)
-			);
-		}
-	});
-
-	// Export the component back for use in other files
-	module.exports = OneResult;
-
-/***/ },
-/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21873,13 +21881,13 @@
 	module.exports = Saved;
 
 /***/ },
-/* 177 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	// Include the axios package for performing HTTP requests (promise based alternative to request)
-	var axios = __webpack_require__(178);
+	var axios = __webpack_require__(177);
 
 	// This variable will be pre-programmed with our authentication key (the one we received when we registered)
 	var authKey = "b9f91d369ff59547cd47b931d8cbc56b:0:74623931";
@@ -21916,15 +21924,21 @@
 			return axios.get(queryURL).then(function (results) {
 				console.log("results: ", results);
 				var data = [];
+				var saved = [];
 				for (var i = 0; i < numResults; i++) {
 					data.push({
 						title: results.data.response.docs[i].headline.main,
 						date: results.data.response.docs[i].pub_date,
 						url: results.data.response.docs[i].web_url
 					});
+					saved.push(0);
 				};
 				console.log("data", data);
-				return data;
+				console.log("saved", saved);
+				var bundle = {
+					data: data,
+					saveStatus: saved };
+				return bundle;
 			});
 		},
 
@@ -21939,11 +21953,12 @@
 		},
 
 		// This function posts new results to our database.
-		postResults: function postResults(data) {
+		postArticle: function postArticle(data) {
 
 			return axios.post('/api', data).then(function (results) {
 
 				console.log("Posted to MongoDB");
+				console.log("results", results);
 				return results;
 			});
 		}
@@ -21954,20 +21969,20 @@
 	module.exports = helpers;
 
 /***/ },
-/* 178 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(179);
+	module.exports = __webpack_require__(178);
 
 /***/ },
-/* 179 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(180);
-	var bind = __webpack_require__(181);
-	var Axios = __webpack_require__(182);
+	var utils = __webpack_require__(179);
+	var bind = __webpack_require__(180);
+	var Axios = __webpack_require__(181);
 
 	/**
 	 * Create an instance of Axios
@@ -22003,7 +22018,7 @@
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(199);
+	axios.spread = __webpack_require__(198);
 
 	module.exports = axios;
 
@@ -22012,12 +22027,12 @@
 
 
 /***/ },
-/* 180 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var bind = __webpack_require__(181);
+	var bind = __webpack_require__(180);
 
 	/*global toString:true*/
 
@@ -22317,7 +22332,7 @@
 
 
 /***/ },
-/* 181 */
+/* 180 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -22334,17 +22349,17 @@
 
 
 /***/ },
-/* 182 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var defaults = __webpack_require__(183);
-	var utils = __webpack_require__(180);
-	var InterceptorManager = __webpack_require__(185);
-	var dispatchRequest = __webpack_require__(186);
-	var isAbsoluteURL = __webpack_require__(197);
-	var combineURLs = __webpack_require__(198);
+	var defaults = __webpack_require__(182);
+	var utils = __webpack_require__(179);
+	var InterceptorManager = __webpack_require__(184);
+	var dispatchRequest = __webpack_require__(185);
+	var isAbsoluteURL = __webpack_require__(196);
+	var combineURLs = __webpack_require__(197);
 
 	/**
 	 * Create a new instance of Axios
@@ -22425,13 +22440,13 @@
 
 
 /***/ },
-/* 183 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(180);
-	var normalizeHeaderName = __webpack_require__(184);
+	var utils = __webpack_require__(179);
+	var normalizeHeaderName = __webpack_require__(183);
 
 	var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 	var DEFAULT_CONTENT_TYPE = {
@@ -22503,12 +22518,12 @@
 
 
 /***/ },
-/* 184 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(180);
+	var utils = __webpack_require__(179);
 
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -22521,12 +22536,12 @@
 
 
 /***/ },
-/* 185 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(180);
+	var utils = __webpack_require__(179);
 
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -22579,13 +22594,13 @@
 
 
 /***/ },
-/* 186 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(180);
-	var transformData = __webpack_require__(187);
+	var utils = __webpack_require__(179);
+	var transformData = __webpack_require__(186);
 
 	/**
 	 * Dispatch a request to the server using whichever adapter
@@ -22626,10 +22641,10 @@
 	    adapter = config.adapter;
 	  } else if (typeof XMLHttpRequest !== 'undefined') {
 	    // For browsers use XHR adapter
-	    adapter = __webpack_require__(188);
+	    adapter = __webpack_require__(187);
 	  } else if (typeof process !== 'undefined') {
 	    // For node use HTTP adapter
-	    adapter = __webpack_require__(188);
+	    adapter = __webpack_require__(187);
 	  }
 
 	  return Promise.resolve(config)
@@ -22661,12 +22676,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 187 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(180);
+	var utils = __webpack_require__(179);
 
 	/**
 	 * Transform the data for a request or a response
@@ -22687,18 +22702,18 @@
 
 
 /***/ },
-/* 188 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(180);
-	var settle = __webpack_require__(189);
-	var buildURL = __webpack_require__(192);
-	var parseHeaders = __webpack_require__(193);
-	var isURLSameOrigin = __webpack_require__(194);
-	var createError = __webpack_require__(190);
-	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(195);
+	var utils = __webpack_require__(179);
+	var settle = __webpack_require__(188);
+	var buildURL = __webpack_require__(191);
+	var parseHeaders = __webpack_require__(192);
+	var isURLSameOrigin = __webpack_require__(193);
+	var createError = __webpack_require__(189);
+	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(194);
 
 	module.exports = function xhrAdapter(config) {
 	  return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -22792,7 +22807,7 @@
 	    // This is only done if running in a standard browser environment.
 	    // Specifically not if we're in a web worker, or react-native.
 	    if (utils.isStandardBrowserEnv()) {
-	      var cookies = __webpack_require__(196);
+	      var cookies = __webpack_require__(195);
 
 	      // Add xsrf header
 	      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -22856,12 +22871,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 189 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var createError = __webpack_require__(190);
+	var createError = __webpack_require__(189);
 
 	/**
 	 * Resolve or reject a Promise based on response status.
@@ -22887,12 +22902,12 @@
 
 
 /***/ },
-/* 190 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var enhanceError = __webpack_require__(191);
+	var enhanceError = __webpack_require__(190);
 
 	/**
 	 * Create an Error with the specified message, config, error code, and response.
@@ -22910,7 +22925,7 @@
 
 
 /***/ },
-/* 191 */
+/* 190 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -22935,12 +22950,12 @@
 
 
 /***/ },
-/* 192 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(180);
+	var utils = __webpack_require__(179);
 
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -23009,12 +23024,12 @@
 
 
 /***/ },
-/* 193 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(180);
+	var utils = __webpack_require__(179);
 
 	/**
 	 * Parse headers into an object
@@ -23052,12 +23067,12 @@
 
 
 /***/ },
-/* 194 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(180);
+	var utils = __webpack_require__(179);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -23126,7 +23141,7 @@
 
 
 /***/ },
-/* 195 */
+/* 194 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -23168,12 +23183,12 @@
 
 
 /***/ },
-/* 196 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(180);
+	var utils = __webpack_require__(179);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -23227,7 +23242,7 @@
 
 
 /***/ },
-/* 197 */
+/* 196 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -23247,7 +23262,7 @@
 
 
 /***/ },
-/* 198 */
+/* 197 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -23265,7 +23280,7 @@
 
 
 /***/ },
-/* 199 */
+/* 198 */
 /***/ function(module, exports) {
 
 	'use strict';
