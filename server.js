@@ -38,7 +38,7 @@ app.use(express.static(process.cwd()));
 //app.use(bodyParser.json({type:'application/vnd.api+json'})); // the type option is used to determine
 
 // override with POST having ?_method=DELETE
-app.use(methodOverride('_method'));
+// app.use(methodOverride('_method'));
 
 // create an instance of express handlebars
 // this allows access to the full API

@@ -42,6 +42,20 @@ var Form = React.createClass({
 		return false;
 	},
 
+	// When a user submits... 
+	handleClear: function(){
+
+		// Set the parent to have the search term
+		this.props.clearForm();
+		this.setState({
+			searchTerm: "",
+			startYear: "",
+			endYear: ""
+		});
+
+		return false;
+	},
+
 	// Here we render the function
 	render: function(){
 
@@ -77,7 +91,7 @@ var Form = React.createClass({
 
 
 						  <button type="button" className="btn btn-default" id="runSearch" onClick={this.handleClick}><i className="fa fa-search"></i>Search</button>
-	  					  <button type="button" className="btn btn-default" id="clearAll"><i className="fa fa-trash"></i>Clear Results</button>
+	  					  <button type="button" className="btn btn-default" id="clearAll" onClick={this.handleClear}><i className="fa fa-trash"></i>Clear Results</button>
 
 						</form>
 					</div>

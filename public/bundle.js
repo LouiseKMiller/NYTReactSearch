@@ -21447,7 +21447,7 @@
 		getInitialState: function getInitialState() {
 			return {
 				searchTerms: {},
-				// results holds headline, date and url
+				// searchResults holds headline, date and url
 				searchResults: [],
 				saveStatus: [],
 				history: [] /*Note how we added in this history state variable*/
@@ -21462,6 +21462,14 @@
 		},
 
 		// This function allows form child to update the main with new search terms.
+		clearForm: function clearForm() {
+			this.setState({
+				searchResults: [],
+				searchTerms: {}
+			});
+		},
+
+		// This function allows form child to save an article.
 		saveArticle: function saveArticle(indx) {
 			var dat = {
 				title: this.state.searchResults[indx].title,
@@ -21491,24 +21499,29 @@
 
 		// If the component changes (i.e. if a search is entered)...
 		componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-
-			if (prevState.searchTerms != this.state.searchTerms) {
+			// if a search was entered in the form component
+			if (prevState.searchTerms != this.state.searchTerms && Object.getOwnPropertyNames(this.state.searchTerms).length !== 0) {
 				console.log("UPDATED SEARCH TERMS");
+				if (this.state.searchTerms.searchTerm === "") {
+					console.log("need to clear form");
+				} else {
 
-				// Run the query for the news articles
-				helpers.runQuery(this.state.searchTerms).then(function (bundle) {
-					if (bundle.data != this.state.results) {
-						console.log("Results", bundle.data);
+					// Run the query for the news articles
+					helpers.runQuery(this.state.searchTerms).then(function (bundle) {
+						if (bundle.data != this.state.results) {
+							console.log("Results", bundle.data);
 
-						this.setState({
-							searchResults: bundle.data,
-							saveStatus: bundle.saveStatus
-						});
-					} // if statement
-				}.bind(this)); // then(function(data))
+							this.setState({
+								searchResults: bundle.data,
+								saveStatus: bundle.saveStatus
+							});
+						} // if statement
+					}.bind(this)); // then(function(data))
+				}; // inner if statement
 			}; //if statement
 		},
 
+		// When page rendered, display what was saved in database
 		componentDidMount: function componentDidMount() {
 
 			// Get the latest history.
@@ -21552,7 +21565,7 @@
 					React.createElement(
 						'div',
 						{ className: 'row' },
-						React.createElement(Form, { setTerms: this.setTerms })
+						React.createElement(Form, { setTerms: this.setTerms, clearForm: this.clearForm })
 					),
 					React.createElement(
 						'div',
@@ -21578,7 +21591,7 @@
 									'small',
 									null,
 									'Made by Louise with lots and lots of ',
-									React.createElement('i', { className: 'fa fa-heart' })
+									React.createElement('i', { className: 'fa fa-wrench' })
 								)
 							)
 						)
@@ -21638,6 +21651,20 @@
 
 			// Set the parent to have the search term
 			this.props.setTerms(this.state);
+			return false;
+		},
+
+		// When a user submits... 
+		handleClear: function handleClear() {
+
+			// Set the parent to have the search term
+			this.props.clearForm();
+			this.setState({
+				searchTerm: "",
+				startYear: "",
+				endYear: ""
+			});
+
 			return false;
 		},
 
@@ -21709,7 +21736,7 @@
 							),
 							React.createElement(
 								"button",
-								{ type: "button", className: "btn btn-default", id: "clearAll" },
+								{ type: "button", className: "btn btn-default", id: "clearAll", onClick: this.handleClear },
 								React.createElement("i", { className: "fa fa-trash" }),
 								"Clear Results"
 							)

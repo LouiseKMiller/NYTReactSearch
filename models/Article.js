@@ -20,6 +20,9 @@ var ArticleSchema = new Schema({
   url: {
     type:String,
     required:true
+  },
+  createDate: {
+    type:Date
   }
 
 });

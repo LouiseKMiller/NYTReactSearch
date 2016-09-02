@@ -19,7 +19,7 @@ router.get('/', function(req,res){
 
 router.get('/api', function(req,res){
 	console.log("get request received");
-	Article.find({})
+	Article.find({}).sort([['createDate', 'descending']])
 		.exec(function(err, docs){
 			if  (err){
 				console.log(err);
@@ -30,8 +30,12 @@ router.get('/api', function(req,res){
 	}) // end of Article.find
 });
 
+// change to save create date, and then sort in descending order
+// Article.find({}).sort([['createDate' 'descending']]).limit(5).exec(function(err, doc){})
+
 router.post('/api', function(req,res){
 	var data = req.body;
+	data.createDate = Date.now();
 	Article.create(data,function(err, doc){
 		if  (err){
 			console.log(err);
