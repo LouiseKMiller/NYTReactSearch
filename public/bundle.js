@@ -21504,25 +21504,6 @@
 							searchResults: bundle.data,
 							saveStatus: bundle.saveStatus
 						});
-
-						// // After we've received the result... then post the results to MongoDB.
-						// helpers.postResults(this.state.searchResults)
-						// 	.then(function(data2){
-						// 		console.log("Updated!");
-
-						// 		helpers.getResults()
-						// 			.then(function(response){
-						// 				console.log("Current Results", response.data);
-						// 				if (response != this.state.history){
-						// 					console.log ("History", response.data);
-						// 					this.setState({
-						// 						history: response.data
-						// 					})
-						// 				}
-						// 			}.bind(this))
-
-						// 	}.bind(this)
-						// ) // 
 					} // if statement
 				}.bind(this)); // then(function(data))
 			}; //if statement
@@ -21848,8 +21829,49 @@
 		displayName: "Saved",
 
 
+		// When a user submits... 
+		handleRemove: function handleRemove(i, props) {
+
+			console.log("remove this", i);
+			// Set the parent to have the search term
+			//	this.props.setSave(this.state);
+			return false;
+		},
+
 		// Here we render the function
 		render: function render() {
+			var savedArts = this.props.savedArticles;
+			var savedArtsListing = savedArts.map(function (result, i) {
+				return React.createElement(
+					"div",
+					{ className: "well", id: "savedWell" + i, key: i },
+					React.createElement(
+						"h3",
+						{ className: "articleHeadline" },
+						React.createElement(
+							"strong",
+							null,
+							result.title
+						)
+					),
+					React.createElement(
+						"button",
+						{ type: "button", className: "btn btn-default btn-sm pull-right", "data-index": i, onClick: this.handleRemove.bind(this, i, this.props) },
+						React.createElement("i", { className: "fa fa-database" }),
+						"Remove"
+					),
+					React.createElement(
+						"h5",
+						null,
+						result.date
+					),
+					React.createElement(
+						"a",
+						{ href: result.url },
+						result.url
+					)
+				);
+			}, this);
 
 			return React.createElement(
 				"div",
@@ -21872,7 +21894,11 @@
 							)
 						)
 					),
-					React.createElement("div", { className: "panel-body", id: "savedSection" })
+					React.createElement(
+						"div",
+						{ className: "panel-body", id: "savedSection" },
+						savedArtsListing
+					)
 				)
 			);
 		}

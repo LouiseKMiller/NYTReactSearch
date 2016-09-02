@@ -74,24 +74,6 @@ var Main = React.createClass({
 							saveStatus: bundle.saveStatus
 						})
 
-						// // After we've received the result... then post the results to MongoDB.
-						// helpers.postResults(this.state.searchResults)
-						// 	.then(function(data2){
-						// 		console.log("Updated!");
-
-						// 		helpers.getResults()
-						// 			.then(function(response){
-						// 				console.log("Current Results", response.data);
-						// 				if (response != this.state.history){
-						// 					console.log ("History", response.data);
-						// 					this.setState({
-						// 						history: response.data
-						// 					})
-						// 				}
-						// 			}.bind(this))
-
-						// 	}.bind(this)
-						// ) // 
 					} // if statement
 				}.bind(this)) // then(function(data))
 		};  //if statement

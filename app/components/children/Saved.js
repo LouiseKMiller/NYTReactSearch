@@ -3,8 +3,36 @@ var React = require('react');
 
 var Saved = React.createClass({
 
+
+	// When a user submits... 
+	handleRemove: function(i, props){
+
+		console.log("remove this", i);
+		// Set the parent to have the search term
+	//	this.props.setSave(this.state);
+		return false;
+	},
+
 	// Here we render the function
 	render: function(){
+		var savedArts = this.props.savedArticles;
+		var savedArtsListing = savedArts.map(function(result, i){
+			return (
+				<div className="well" id={"savedWell"+ i} key={i}>
+					<h3 className="articleHeadline">
+						<strong>{result.title}</strong>
+					</h3>
+					<button type="button" className="btn btn-default btn-sm pull-right" data-index={i} onClick={this.handleRemove.bind(this,i,this.props)}><i className="fa fa-database"></i>Remove</button>
+					<h5>
+						{result.date}
+					</h5>
+					<a href={result.url}>
+						{result.url}
+					</a>
+
+				</div>
+			)
+		}, this)
 
 		return(
 
@@ -18,6 +46,7 @@ var Saved = React.createClass({
 					</div>
 
 					<div className="panel-body" id="savedSection">
+						{savedArtsListing}
 					</div>
 				</div>
 			</div>
