@@ -60,40 +60,41 @@ var Form = React.createClass({
 	render: function(){
 
 		return(
-
+		<div className="row">
 			<div className="col-sm-12">
-			<br/>
+				<br/>
 
-				<div className="panel panel-primary">
-					<div className="panel-heading">
-						<h3 className="panel-title"><strong><i className="fa  fa-list-alt"></i>   Search Parameters</strong></h3>
-					</div>
-					<div className="panel-body">
+					<div className="panel panel-primary">
+						<div className="panel-heading">
+							<h3 className="panel-title"><strong><i className="fa  fa-list-alt"></i>   Search Parameters</strong></h3>
+						</div>
+						<div className="panel-body">
 
-						<form>
+							<form>
 
-						  <div className="form-group">
-						    <label>Search Term</label>
-						    <input type="text" value={this.state.value}className="form-control" id="searchTerm" onChange= {this.handleChange} required/>
-						  </div>
-
-
-						  <div className="form-group">
-						    <label>Start Year</label>
-						    <input type="text" value={this.state.value}className="form-control" id="startYear" onChange= {this.handleChange} required/>
-						  </div>
+							  <div className="form-group">
+							    <label>Search Term</label>
+							    <input type="text" value={this.state.value}className="form-control" id="searchTerm" onChange= {this.handleChange} required/>
+							  </div>
 
 
-						  <div className="form-group">
-						    <label>End Year</label>
-						    <input type="text" value={this.state.value}className="form-control" id="endYear" onChange= {this.handleChange} required/>
-						  </div>
+							  <div className="form-group">
+							    <label>Start Year</label>
+							    <input type="text" value={this.state.value}className="form-control" id="startYear" onChange= {this.handleChange} required/>
+							  </div>
 
 
-						  <button type="button" className="btn btn-default" id="runSearch" onClick={this.handleClick}><i className="fa fa-search"></i>Search</button>
-	  					  <button type="button" className="btn btn-default" id="clearAll" onClick={this.handleClear}><i className="fa fa-trash"></i>Clear Results</button>
+							  <div className="form-group">
+							    <label>End Year</label>
+							    <input type="text" value={this.state.value}className="form-control" id="endYear" onChange= {this.handleChange} required/>
+							  </div>
 
-						</form>
+
+							  <button type="button" className="btn btn-default" id="runSearch" onClick={this.handleClick}><i className="fa fa-search"></i>Search</button>
+		  					  <button type="button" className="btn btn-default" id="clearAll" onClick={this.handleClear}><i className="fa fa-trash"></i>Clear Results</button>
+
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -1,49 +1,36 @@
+// Inclue the React library
+var React = require('react');
 
-var path = require('path');
-var express = require('express');
-var router = express.Router();
-var Article = require('../../models/Article.js');
+// Include the Router
+var Router = require('react-router');
+var Route = Router.Route;
+
+//  Include the IndexRoute (catch-all route)
+var IndexRoute	= Router.IndexRoute;
+
+// Reference the high-level components
+var Main = require('../components/Main');
+var Form = require('../components/children/Form'); 
+var Results = require('../components/children/Results'); 
+var Saved = require('../components/children/Saved'); 
 
 
-router.get('/', function(req,res){
-	res.sendFile('../../index.html', function (err) {
-    if (err) {
-      console.log(err);
-      res.status(err.status).end();
-    }
-    else {
-      console.log('Sent');
-    }
-  });
-})
+// Export the Routes
+module.exports = (
 
-router.get('/api', function(req,res){
-	console.log("get request received");
-	Article.find({}).sort([['createDate', 'descending']])
-		.exec(function(err, docs){
-			if  (err){
-				console.log(err);
-			} else {
-				console.log("****end of database search***")
-				res.send(docs);
-		}
-	}) // end of Article.find
-});
+	/*High level component is the Main component*/
+	<Route path='/' component={Main}>
 
-// change to save create date, and then sort in descending order
-// Article.find({}).sort([['createDate' 'descending']]).limit(5).exec(function(err, doc){})
+		{/* If user selects Info or Chat show the appropriate component*/}
+		<Route path='Form' component={Form} />
+		<Route path='Results' component={Results} />
+		<Route path='Saved' component={Saved} />
 
-router.post('/api', function(req,res){
-	var data = req.body;
-	data.createDate = Date.now();
-	Article.create(data,function(err, doc){
-		if  (err){
-			console.log(err);
-		} else {
-			console.log("doc saved to database");
-			res.send(doc);
-		};
-	}); // end of Article.create
-});
+		{/*If user selects any other path... we get the Info Route*/}
+		 <IndexRoute component={Form} />
 
-module.exports = router;
+	</Route>
+
+
+
+);

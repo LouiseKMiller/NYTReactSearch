@@ -1,9 +1,7 @@
 // Include React
 var React = require('react');
-var Form = require('./children/Form');
-var Results = require('./children/Results');
-var Saved = require('./children/Saved');
 var helpers = require('./utils/helpers.js');
+var Link = require('react-router').Link;
 
 var Main = React.createClass({
 	// Here we set a generic state associated with the number of clicks
@@ -63,6 +61,24 @@ var Main = React.createClass({
 		}.bind(this, indx))
 	},
 
+		// This function allows form child to save an article.
+	delArticle: function(title){
+		helpers.deleteArticle(title)
+		.then(function(){
+			helpers.getSavedArticles()
+				.then(function(response){
+				console.log("Current History", response.data);
+				if (response != this.state.history){
+					console.log ("History", response.data);
+
+					this.setState({
+						history: response.data
+					})
+				}
+			}.bind(this))	
+		}.bind(this))
+	},
+
 	// If the component changes (i.e. if a search is entered)...
 	componentDidUpdate: function(prevProps, prevState){
 		// if a search was entered in the form component
@@ -115,6 +131,15 @@ var Main = React.createClass({
 			backgroundColor: '#20315A',
 			color: 'white'
 		};
+		var childrenWithProps = React.cloneElement(this.props.children, {
+			setTerms: this.setTerms,
+			clearForm: this.clearForm,
+			nycData: this.state.searchResults,
+			saves: this.state.saveStatus,
+			saveArticle: this.saveArticle,
+			savedArticles: this.state.history,
+			delArticle: this.delArticle
+		});
 		return(
 
 			// Main Bootstrap Search
@@ -124,19 +149,20 @@ var Main = React.createClass({
 					<h1 className="text-center"><strong><i className="fa fa-newspaper-o"></i> New York Times Search</strong></h1>
 				</div>
 
+				<div>
+					<ul>
+						<li><Link to="/Form">Form</Link></li> 
+						<li><Link to="/Results">Results</Link></li> 
+						<li><Link to="/Saved">Saved</Link></li> 
+					</ul>
 
-				<div className="row">
-					<Form setTerms={this.setTerms} clearForm={this.clearForm}/>
 				</div>
-
 				<div className="row">
-					<Results nycData={this.state.searchResults} saves={this.state.saveStatus} saveArticle={this.saveArticle}/>
-				</div>
+					
+					{/*This code will dump the correct Child Component*/}
+					{childrenWithProps}
 
-				<div className="row">
-					<Saved savedArticles={this.state.history}/>
 				</div>
-
 
 
 				<div className="row">

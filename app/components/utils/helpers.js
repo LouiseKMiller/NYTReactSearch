@@ -78,6 +78,20 @@ var helpers = {
 				console.log("results", results);
 				return(results);
 			})
+	},
+
+	// This function posts new results to our database.
+	deleteArticle: function(data){
+		console.log("here in deleteArticle",data);
+		return axios({
+			method: 'delete',
+			url: '/api', 
+			data: data})
+			.then(function(results){
+
+				console.log("Deleted from MongoDB");
+				return(results);
+			})
 	}
 
 }

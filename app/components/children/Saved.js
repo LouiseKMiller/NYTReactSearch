@@ -5,11 +5,12 @@ var Saved = React.createClass({
 
 
 	// When a user submits... 
-	handleRemove: function(i, props){
+	handleRemove: function(title){
 
-		console.log("remove this", i);
+		console.log("remove this", title);
 		// Set the parent to have the search term
-	//	this.props.setSave(this.state);
+
+		this.props.delArticle({title: title});
 		return false;
 	},
 
@@ -22,7 +23,7 @@ var Saved = React.createClass({
 					<h3 className="articleHeadline">
 						<strong>{result.title}</strong>
 					</h3>
-					<button type="button" className="btn btn-default btn-sm pull-right" data-index={i} onClick={this.handleRemove.bind(this,i,this.props)}><i className="fa fa-database"></i>Remove</button>
+					<button type="button" className="btn btn-default btn-sm pull-right" data-index={i} onClick={this.handleRemove.bind(this,result.title)}><i className="fa fa-database"></i>Remove</button>
 					<h5>
 						{result.date}
 					</h5>
@@ -35,22 +36,23 @@ var Saved = React.createClass({
 		}, this)
 
 		return(
+			<div className="row">
 
-			<div className="col-sm-12">
-			<br/>
+				<div className="col-sm-12">
+				<br/>
 
-				<div className="panel panel-primary">
+					<div className="panel panel-primary">
 
-					<div className="panel-heading">
-						<h3 className="panel-title"><strong><i className="fa fa-table"></i>   Saved Articles</strong></h3>
-					</div>
+						<div className="panel-heading">
+							<h3 className="panel-title"><strong><i className="fa fa-table"></i>   Saved Articles</strong></h3>
+						</div>
 
-					<div className="panel-body" id="savedSection">
-						{savedArtsListing}
+						<div className="panel-body" id="savedSection">
+							{savedArtsListing}
+						</div>
 					</div>
 				</div>
 			</div>
-
 		)
 	}
 });
