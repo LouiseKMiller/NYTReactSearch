@@ -1,5 +1,5 @@
 // Database configuration
-// using mongoose 
+// using mongoose
 var mongoose = require('mongoose');
 
 // Build the connection string
@@ -10,13 +10,15 @@ var mongoose = require('mongoose');
 //     var dbURI = 'mongodb//username:password@localhost/scrappingdb'
 
 var dbURI = 'mongodb://localhost/nytreact';
+var dbHerokuURI = 'mongodb://heroku_1vr4v7wz:vut8o07ash9tfescnnoc0je0f8@ds019876.mlab.com:19876/heroku_1vr4v7wz';
 
 // Create the database connection
 // can add options in JSON object as second parameter
 // var dbOptions = {'user':'db_username','pass':'db_password'};
 //     other options db, server, replset
 // mongoose.connect(dbURI, dbOptions);
-mongoose.connect(dbURI);
+// mongoose.connect(dbURI);
+mongoose.connect(dbHerokuURI);
 
 // variable for mongoose connection
 var db = mongoose.connection;
